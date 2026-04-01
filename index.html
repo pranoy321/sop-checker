@@ -11,6 +11,7 @@
     --accent: #00e5a0; --accent-dim: rgba(0,229,160,0.12);
     --warn: #ffb800; --warn-dim: rgba(255,184,0,0.12);
     --danger: #ff4f4f; --danger-dim: rgba(255,79,79,0.1);
+    --purple: #b388ff; --purple-dim: rgba(179,136,255,0.12);
     --text: #f0f0f0; --muted: #888;
     --mono: 'DM Mono', monospace; --display: 'Syne', sans-serif;
   }
@@ -22,7 +23,7 @@
   .brand { font-family: var(--display); font-size: 13px; font-weight: 700; color: var(--accent); letter-spacing: 0.05em; text-transform: uppercase; }
   .sync-btn { background: var(--surface2); border: 1px solid var(--border); border-radius: 20px; padding: 4px 10px; font-family: var(--mono); font-size: 11px; color: var(--muted); cursor: pointer; display: flex; align-items: center; gap: 5px; }
   .sync-btn:active { border-color: var(--accent); color: var(--accent); }
-  .sync-icon { display: inline-block; transition: transform 0.6s; }
+  .sync-icon { display: inline-block; }
   .sync-icon.spinning { animation: spin 0.8s linear infinite; }
   @keyframes spin { to { transform: rotate(360deg); } }
 
@@ -40,11 +41,12 @@
   .stats-bar { display: flex; border-bottom: 1px solid var(--border); }
   .stat { flex: 1; padding: 10px 0; text-align: center; border-right: 1px solid var(--border); }
   .stat:last-child { border-right: none; }
-  .stat-num { font-family: var(--display); font-size: 20px; font-weight: 800; display: block; line-height: 1; }
+  .stat-num { font-family: var(--display); font-size: 18px; font-weight: 800; display: block; line-height: 1; }
   .stat-label { font-size: 9px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; display: block; margin-top: 3px; }
   .stat.total .stat-num { color: var(--text); }
   .stat.done .stat-num { color: var(--accent); }
   .stat.pending .stat-num { color: var(--warn); }
+  .stat.extra .stat-num { color: var(--purple); }
 
   .sync-status { text-align: center; padding: 6px; font-size: 11px; color: var(--muted); border-bottom: 1px solid var(--border); background: var(--surface); }
   .sync-status.ok { color: var(--accent); }
@@ -53,17 +55,25 @@
   .results { padding: 12px 16px; }
   .results-label { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 8px; padding: 0 4px; }
 
+  .sheet-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; margin: 14px 4px 6px; font-weight: 500; }
+  .sheet-label.runner { color: var(--accent); }
+  .sheet-label.extra { color: var(--purple); }
+
   .part-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 14px 16px; margin-bottom: 8px; display: flex; align-items: center; justify-content: space-between; gap: 12px; cursor: pointer; transition: border-color 0.15s; }
   .part-card:active { background: var(--surface2); }
   .part-card.completed { border-left: 3px solid var(--accent); }
   .part-card.pending { border-left: 3px solid var(--warn); }
+  .part-card.extra { border-left: 3px solid var(--purple); }
+
   .part-info { flex: 1; min-width: 0; }
   .part-no { font-family: var(--display); font-size: 15px; font-weight: 700; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .part-meta { font-size: 11px; color: var(--muted); margin-top: 3px; }
   .part-meta span { display: inline-block; margin-right: 8px; }
+
   .status-badge { flex-shrink: 0; padding: 5px 10px; border-radius: 20px; font-size: 10px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.06em; }
   .badge-completed { background: var(--accent-dim); color: var(--accent); border: 1px solid rgba(0,229,160,0.3); }
   .badge-pending { background: var(--warn-dim); color: var(--warn); border: 1px solid rgba(255,184,0,0.3); }
+  .badge-extra { background: var(--purple-dim); color: var(--purple); border: 1px solid rgba(179,136,255,0.3); }
 
   .not-found { text-align: center; padding: 48px 20px; }
   .not-found-icon { font-size: 40px; margin-bottom: 12px; }
@@ -77,7 +87,6 @@
 
   .loading-state { text-align: center; padding: 60px 20px; color: var(--muted); }
   .loading-spinner { font-size: 32px; animation: spin 1s linear infinite; display: block; margin-bottom: 12px; }
-  .loading-text { font-size: 13px; }
 
   .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 200; align-items: flex-end; justify-content: center; }
   .modal-overlay.open { display: flex; }
@@ -92,6 +101,7 @@
   .modal-status-big { display: flex; align-items: center; gap: 8px; margin-top: 16px; padding: 14px 16px; border-radius: 12px; font-family: var(--display); font-size: 15px; font-weight: 700; }
   .modal-status-big.completed { background: var(--accent-dim); color: var(--accent); border: 1px solid rgba(0,229,160,0.25); }
   .modal-status-big.pending { background: var(--warn-dim); color: var(--warn); border: 1px solid rgba(255,184,0,0.25); }
+  .modal-status-big.extra { background: var(--purple-dim); color: var(--purple); border: 1px solid rgba(179,136,255,0.25); }
   .modal-close { width: 100%; margin-top: 12px; padding: 13px; background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; color: var(--muted); font-family: var(--mono); font-size: 13px; cursor: pointer; }
 </style>
 </head>
@@ -115,6 +125,7 @@
   <button class="filter-btn active" data-filter="all">All</button>
   <button class="filter-btn" data-filter="COMPLETED">✓ Completed</button>
   <button class="filter-btn" data-filter="PENDING">⏳ Pending</button>
+  <button class="filter-btn" data-filter="EXTRA">⭐ Extra</button>
   <button class="filter-btn" data-filter="EPDM">EPDM</button>
   <button class="filter-btn" data-filter="SILICONE">Silicone</button>
   <button class="filter-btn" data-filter="NITRILE">Nitrile</button>
@@ -126,49 +137,51 @@
   <div class="stat total"><span class="stat-num" id="statTotal">—</span><span class="stat-label">Total</span></div>
   <div class="stat done"><span class="stat-num" id="statDone">—</span><span class="stat-label">Done</span></div>
   <div class="stat pending"><span class="stat-num" id="statPending">—</span><span class="stat-label">Pending</span></div>
+  <div class="stat extra"><span class="stat-num" id="statExtra">—</span><span class="stat-label">Extra</span></div>
 </div>
 
 <div class="sync-status" id="syncStatus">Loading data...</div>
+
 <div class="results" id="results">
   <div class="loading-state">
     <span class="loading-spinner">↻</span>
-    <div class="loading-text">Fetching latest data from Google Sheets...</div>
+    <div>Fetching latest data...</div>
   </div>
 </div>
 
-<!-- MODAL -->
 <div class="modal-overlay" id="modalOverlay" onclick="closeModal(event)">
   <div class="modal">
     <div class="modal-handle"></div>
     <div class="modal-partno" id="modalPartNo"></div>
     <div class="modal-row"><span class="modal-key">Material</span><span class="modal-val" id="modalMaterial"></span></div>
     <div class="modal-row"><span class="modal-key">S.No</span><span class="modal-val" id="modalSno"></span></div>
-    <div class="modal-row"><span class="modal-key">In Runner List</span><span class="modal-val" style="color:var(--accent)">✓ YES</span></div>
+    <div class="modal-row"><span class="modal-key">List</span><span class="modal-val" id="modalList"></span></div>
     <div class="modal-status-big" id="modalStatusBig"></div>
     <button class="modal-close" onclick="document.getElementById('modalOverlay').classList.remove('open')">Close</button>
   </div>
 </div>
 
 <script>
-const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRmEC3eQtpQEv5kydGZhhlDs9tQca6nvoGYRe9tEZyjW7J3yigfWIHMN5yoRZhZjoaT0tTnIre0faQw/pub?gid=1204003115&single=true&output=csv';
+const SHEET1_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRmEC3eQtpQEv5kydGZhhlDs9tQca6nvoGYRe9tEZyjW7J3yigfWIHMN5yoRZhZjoaT0tTnIre0faQw/pub?gid=1204003115&single=true&output=csv';
+const SHEET2_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRmEC3eQtpQEv5kydGZhhlDs9tQca6nvoGYRe9tEZyjW7J3yigfWIHMN5yoRZhZjoaT0tTnIre0faQw/pub?gid=84377336&single=true&output=csv';
 
-let PARTS = [];
+let RUNNER_PARTS = [];
+let EXTRA_PARTS = [];
 let currentFilter = 'all';
 let searchQuery = '';
-let lastSync = null;
 
-function parseCSV(text) {
+function parseCSV(text, source) {
   const lines = text.trim().split('\n');
-  const headers = lines[0].split(',').map(h => h.trim().replace(/"/g, ''));
   const parts = [];
   for (let i = 1; i < lines.length; i++) {
     const cols = lines[i].split(',').map(c => c.trim().replace(/"/g, ''));
-    if (cols.length >= 3 && cols[1]) {
+    if (cols[1]) {
       parts.push({
         sno: cols[0] || i,
         'Part No': cols[1],
         Material: cols[2] || '',
-        Status: (cols[3] || 'PENDING').toUpperCase().trim()
+        Status: source === 'extra' ? 'EXTRA' : (cols[3] || 'PENDING').toUpperCase().trim(),
+        source
       });
     }
   }
@@ -185,37 +198,42 @@ async function loadData() {
   statusEl.textContent = 'Fetching from Google Sheets...';
 
   try {
-    const res = await fetch(CSV_URL + '&t=' + Date.now());
-    if (!res.ok) throw new Error('Network error');
-    const text = await res.text();
-    PARTS = parseCSV(text);
-    lastSync = new Date();
-    const timeStr = lastSync.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+    const [r1, r2] = await Promise.all([
+      fetch(SHEET1_URL + '&t=' + Date.now()),
+      fetch(SHEET2_URL + '&t=' + Date.now())
+    ]);
+    const [t1, t2] = await Promise.all([r1.text(), r2.text()]);
+    RUNNER_PARTS = parseCSV(t1, 'runner');
+    EXTRA_PARTS = parseCSV(t2, 'extra');
+
+    const timeStr = new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
     statusEl.className = 'sync-status ok';
-    statusEl.textContent = `✓ Live data — ${PARTS.length} parts — Last sync: ${timeStr}`;
+    statusEl.textContent = `✓ Live — Runner: ${RUNNER_PARTS.length} | Extra: ${EXTRA_PARTS.length} | Synced: ${timeStr}`;
     icon.classList.remove('spinning');
     label.textContent = 'Sync';
     render();
-  } catch (err) {
+  } catch(err) {
     statusEl.className = 'sync-status err';
-    statusEl.textContent = '⚠ Could not sync — check internet connection';
+    statusEl.textContent = '⚠ Sync failed — check internet';
     icon.classList.remove('spinning');
     label.textContent = 'Retry';
-    if (PARTS.length === 0) {
+    if (RUNNER_PARTS.length === 0) {
       document.getElementById('results').innerHTML = `
         <div class="not-found">
           <div class="not-found-icon">⚠</div>
           <div class="not-found-title">No Internet</div>
-          <div class="not-found-sub">Connect to internet and tap Retry to load the parts list.</div>
+          <div class="not-found-sub">Connect to internet and tap Retry.</div>
         </div>`;
     }
   }
 }
 
-function normalize(str) { return str.replace(/\s+/g, '').toUpperCase(); }
+function normalize(str) { return str.replace(/\s+/g,'').toUpperCase(); }
+
+function getAllParts() { return [...RUNNER_PARTS, ...EXTRA_PARTS]; }
 
 function getFiltered() {
-  return PARTS.filter(p => {
+  return getAllParts().filter(p => {
     const q = normalize(searchQuery);
     const matchSearch = !q || normalize(p['Part No']).includes(q);
     const matchFilter = currentFilter === 'all' ||
@@ -226,25 +244,26 @@ function getFiltered() {
 }
 
 function updateStats() {
+  const all = getAllParts();
   const filtered = getFiltered();
   document.getElementById('statTotal').textContent = filtered.length;
   document.getElementById('statDone').textContent = filtered.filter(p => p.Status === 'COMPLETED').length;
   document.getElementById('statPending').textContent = filtered.filter(p => p.Status === 'PENDING').length;
+  document.getElementById('statExtra').textContent = filtered.filter(p => p.source === 'extra').length;
 }
 
 function render() {
   const results = document.getElementById('results');
   const filtered = getFiltered();
   updateStats();
-
-  if (PARTS.length === 0) return;
+  if (RUNNER_PARTS.length === 0 && EXTRA_PARTS.length === 0) return;
 
   if (searchQuery && filtered.length === 0) {
     results.innerHTML = `
       <div class="not-found">
         <div class="not-found-icon">⚠</div>
-        <div class="not-found-title">Not in Runner List</div>
-        <div class="not-found-sub">This part is not found in the runner parts list.</div>
+        <div class="not-found-title">Not Found</div>
+        <div class="not-found-sub">This part is not in the runner list or extra parts list.</div>
         <div class="not-found-partno">${searchQuery.trim()}</div>
       </div>`;
     return;
@@ -254,39 +273,68 @@ function render() {
     results.innerHTML = `
       <div class="empty-state">
         <div class="empty-icon">🔍</div>
-        <div class="empty-text">Type a part number above<br>to check its SOP status</div>
+        <div class="empty-text">Type a part number to check its SOP status</div>
       </div>`;
     return;
   }
 
-  const label = filtered.length === 1 ? '1 part found' : `${filtered.length} parts found`;
-  let html = `<div class="results-label">${label}</div>`;
-  filtered.forEach(p => {
-    const isCompleted = p.Status === 'COMPLETED';
-    html += `
-      <div class="part-card ${isCompleted ? 'completed' : 'pending'}" onclick="showModal('${p['Part No'].replace(/'/g,"\\'")}')">
-        <div class="part-info">
-          <div class="part-no">${p['Part No']}</div>
-          <div class="part-meta"><span>#${p.sno}</span><span>${p.Material}</span></div>
-        </div>
-        <div class="status-badge ${isCompleted ? 'badge-completed' : 'badge-pending'}">
-          ${isCompleted ? '✓ Done' : '⏳ Pending'}
-        </div>
-      </div>`;
-  });
+  const runnerFiltered = filtered.filter(p => p.source === 'runner');
+  const extraFiltered = filtered.filter(p => p.source === 'extra');
+
+  let html = `<div class="results-label">${filtered.length} part${filtered.length !== 1 ? 's' : ''} found</div>`;
+
+  if (runnerFiltered.length > 0) {
+    if (extraFiltered.length > 0) html += `<div class="sheet-label runner">✓ Runner Parts List</div>`;
+    runnerFiltered.forEach(p => {
+      const isCompleted = p.Status === 'COMPLETED';
+      html += `
+        <div class="part-card ${isCompleted ? 'completed' : 'pending'}" onclick="showModal('${p['Part No'].replace(/'/g,"\\'")}','runner')">
+          <div class="part-info">
+            <div class="part-no">${p['Part No']}</div>
+            <div class="part-meta"><span>#${p.sno}</span><span>${p.Material}</span></div>
+          </div>
+          <div class="status-badge ${isCompleted ? 'badge-completed' : 'badge-pending'}">
+            ${isCompleted ? '✓ Done' : '⏳ Pending'}
+          </div>
+        </div>`;
+    });
+  }
+
+  if (extraFiltered.length > 0) {
+    if (runnerFiltered.length > 0) html += `<div class="sheet-label extra">⭐ Extra Parts (Not in Runner List)</div>`;
+    extraFiltered.forEach(p => {
+      html += `
+        <div class="part-card extra" onclick="showModal('${p['Part No'].replace(/'/g,"\\'")}','extra')">
+          <div class="part-info">
+            <div class="part-no">${p['Part No']}</div>
+            <div class="part-meta"><span>#${p.sno}</span><span>${p.Material}</span></div>
+          </div>
+          <div class="status-badge badge-extra">⭐ Extra</div>
+        </div>`;
+    });
+  }
+
   results.innerHTML = html;
 }
 
-function showModal(partNo) {
-  const p = PARTS.find(x => x['Part No'] === partNo);
+function showModal(partNo, source) {
+  const list = source === 'runner' ? RUNNER_PARTS : EXTRA_PARTS;
+  const p = list.find(x => x['Part No'] === partNo);
   if (!p) return;
+  const isExtra = source === 'extra';
   const isCompleted = p.Status === 'COMPLETED';
   document.getElementById('modalPartNo').textContent = p['Part No'];
-  document.getElementById('modalMaterial').textContent = p.Material;
-  document.getElementById('modalSno').textContent = `#${p.sno} of ${PARTS.length}`;
+  document.getElementById('modalMaterial').textContent = p.Material || '—';
+  document.getElementById('modalSno').textContent = `#${p.sno}`;
+  document.getElementById('modalList').textContent = isExtra ? '⭐ Extra Parts' : '✓ Runner Parts List';
   const statusEl = document.getElementById('modalStatusBig');
-  statusEl.className = `modal-status-big ${isCompleted ? 'completed' : 'pending'}`;
-  statusEl.innerHTML = isCompleted ? '✓ &nbsp;SOP COMPLETED' : '⏳ &nbsp;SOP PENDING';
+  if (isExtra) {
+    statusEl.className = 'modal-status-big extra';
+    statusEl.innerHTML = '⭐ &nbsp;SOP COMPLETED — NOT IN RUNNER LIST';
+  } else {
+    statusEl.className = `modal-status-big ${isCompleted ? 'completed' : 'pending'}`;
+    statusEl.innerHTML = isCompleted ? '✓ &nbsp;SOP COMPLETED' : '⏳ &nbsp;SOP PENDING';
+  }
   document.getElementById('modalOverlay').classList.add('open');
 }
 
@@ -309,9 +357,7 @@ document.querySelectorAll('.filter-btn').forEach(btn => {
   });
 });
 
-// Auto-refresh every 5 minutes
 setInterval(loadData, 5 * 60 * 1000);
-
 loadData();
 </script>
 </body>
