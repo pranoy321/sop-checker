@@ -1,184 +1,597 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>SOP Checker — MRP AutoRub</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-@import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@600;700;800&display=swap');
-:root{--bg:#0f0f0f;--surface:#1a1a1a;--surface2:#242424;--border:#2e2e2e;--accent:#00e5a0;--accent-dim:rgba(0,229,160,0.12);--warn:#ffb800;--warn-dim:rgba(255,184,0,0.12);--danger:#ff4f4f;--danger-dim:rgba(255,79,79,0.1);--purple:#b388ff;--purple-dim:rgba(179,136,255,0.12);--text:#f0f0f0;--muted:#888;--mono:'DM Mono',monospace;--display:'Syne',sans-serif}
-.light{--bg:#f5f5f0;--surface:#ffffff;--surface2:#efefea;--border:#ddddd8;--text:#1a1a1a;--muted:#777;--accent-dim:rgba(0,160,110,0.1);--warn-dim:rgba(200,140,0,0.1);--danger-dim:rgba(200,60,60,0.08);--purple-dim:rgba(120,80,200,0.1)}
-*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-body{background:var(--bg);color:var(--text);font-family:var(--mono);min-height:100vh;transition:background .2s,color .2s}
-/* HEADER */
-.header{background:var(--surface);border-bottom:1px solid var(--border);padding:14px 16px 12px;position:sticky;top:0;z-index:100}
-.header-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;gap:8px}
-.brand{font-family:var(--display);font-size:12px;font-weight:700;color:var(--accent);letter-spacing:.05em;text-transform:uppercase}
-.hbtns{display:flex;gap:6px}
-.icon-btn{background:var(--surface2);border:1px solid var(--border);border-radius:20px;padding:4px 10px;font-family:var(--mono);font-size:11px;color:var(--muted);cursor:pointer;display:flex;align-items:center;gap:4px;white-space:nowrap}
-.icon-btn:active{border-color:var(--accent);color:var(--accent)}
-.spin{animation:spin .8s linear infinite;display:inline-block}
-@keyframes spin{to{transform:rotate(360deg)}}
-.search-wrap{position:relative}
-.search-icon{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--muted);pointer-events:none}
-#search{width:100%;background:var(--surface2);border:1.5px solid var(--border);border-radius:10px;padding:11px 11px 11px 36px;font-family:var(--mono);font-size:15px;color:var(--text);outline:none;transition:border-color .2s;-webkit-appearance:none}
-#search:focus{border-color:var(--accent)}
-#search::placeholder{color:var(--muted)}
-/* TABS */
-.tabs{display:flex;border-bottom:1px solid var(--border);background:var(--surface);overflow-x:auto;scrollbar-width:none}
-.tabs::-webkit-scrollbar{display:none}
-.tab{flex-shrink:0;padding:10px 16px;font-family:var(--mono);font-size:12px;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;background:none;border-top:none;border-left:none;border-right:none}
-.tab.active{color:var(--accent);border-bottom-color:var(--accent)}
-.view{display:none}.view.active{display:block}
-/* FILTERS */
-.filters{display:flex;gap:6px;padding:10px 16px;overflow-x:auto;scrollbar-width:none;border-bottom:1px solid var(--border)}
-.filters::-webkit-scrollbar{display:none}
-.filter-btn{flex-shrink:0;padding:5px 12px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--muted);font-family:var(--mono);font-size:11px;cursor:pointer;white-space:nowrap}
-.filter-btn.active{background:var(--accent-dim);border-color:var(--accent);color:var(--accent)}
-/* STATS */
-.stats-bar{display:flex;border-bottom:1px solid var(--border)}
-.stat{flex:1;padding:10px 0;text-align:center;border-right:1px solid var(--border)}
-.stat:last-child{border-right:none}
-.stat-num{font-family:var(--display);font-size:18px;font-weight:800;display:block;line-height:1}
-.stat-label{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;display:block;margin-top:3px}
-.stat.total .stat-num{color:var(--text)}.stat.done .stat-num{color:var(--accent)}.stat.pend .stat-num{color:var(--warn)}.stat.xtra .stat-num{color:var(--purple)}
-/* SYNC */
-.sync-bar{text-align:center;padding:5px;font-size:11px;color:var(--muted);border-bottom:1px solid var(--border);background:var(--surface)}
-.sync-bar.ok{color:var(--accent)}.sync-bar.err{color:var(--danger)}
-/* RESULTS */
-.results{padding:12px 16px}
-.sec-label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:8px;padding:0 2px}
-.sheet-lbl{font-size:10px;text-transform:uppercase;letter-spacing:.1em;margin:12px 2px 6px;font-weight:500}
-.sheet-lbl.runner{color:var(--accent)}.sheet-lbl.extra{color:var(--purple)}
-/* CARDS */
-.part-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:13px 14px;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between;gap:10px;cursor:pointer}
-.part-card:active{background:var(--surface2)}
-.part-card.completed{border-left:3px solid var(--accent)}.part-card.pending{border-left:3px solid var(--warn)}.part-card.xtra{border-left:3px solid var(--purple)}
-.part-info{flex:1;min-width:0}
-.part-no{font-family:var(--display);font-size:15px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.part-meta{font-size:11px;color:var(--muted);margin-top:2px}
-.part-meta span{margin-right:8px}
-.badge{flex-shrink:0;padding:5px 10px;border-radius:20px;font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.05em}
-.b-done{background:var(--accent-dim);color:var(--accent);border:1px solid rgba(0,229,160,.3)}
-.b-pend{background:var(--warn-dim);color:var(--warn);border:1px solid rgba(255,184,0,.3)}
-.b-xtra{background:var(--purple-dim);color:var(--purple);border:1px solid rgba(179,136,255,.3)}
-/* EMPTY */
-.empty{text-align:center;padding:50px 20px;color:var(--muted)}
-.empty-icon{font-size:40px;margin-bottom:10px}
-.empty-text{font-size:13px;line-height:1.7}
-.nf{text-align:center;padding:40px 20px}
-.nf-icon{font-size:36px;margin-bottom:10px}
-.nf-title{font-family:var(--display);font-size:16px;font-weight:700;color:var(--danger);margin-bottom:6px}
-.nf-sub{font-size:12px;color:var(--muted)}
-.nf-part{display:inline-block;margin-top:8px;background:var(--danger-dim);border:1px solid rgba(255,79,79,.3);color:var(--danger);padding:3px 10px;border-radius:20px;font-size:12px}
-/* DASHBOARD */
-.dash{padding:16px}
-.dash-title{font-family:var(--display);font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px}
-.overall-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:16px;margin-bottom:16px}
-.ov-nums{display:flex;margin-bottom:14px}
-.ov-num{flex:1;text-align:center;border-right:1px solid var(--border)}
-.ov-num:last-child{border-right:none}
-.ov-val{font-family:var(--display);font-size:26px;font-weight:800;display:block}
-.ov-lbl{font-size:10px;color:var(--muted);text-transform:uppercase}
-.prog-wrap{margin-bottom:4px}
-.prog-bar{height:12px;background:var(--surface2);border-radius:10px;overflow:hidden}
-.prog-fill{height:100%;background:linear-gradient(90deg,var(--accent),#00c4a0);border-radius:10px;transition:width .8s ease}
-.prog-pct{font-size:12px;color:var(--accent);text-align:right;margin-top:4px;font-weight:500}
-.cat-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:10px}
-.cat-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
-.cat-name{font-family:var(--display);font-size:14px;font-weight:700}
-.cat-pct{font-size:12px;font-weight:600}
-.cat-bar{height:7px;background:var(--surface2);border-radius:10px;overflow:hidden;margin-bottom:8px}
-.cat-bar-fill{height:100%;border-radius:10px;transition:width .7s ease}
-.cat-nums{display:flex;gap:14px;font-size:11px}
-.c-done{color:var(--accent)}.c-pend{color:var(--warn)}.c-tot{color:var(--muted)}
-/* PRINT VIEW */
-.print-view{padding:16px}
-.print-intro{font-size:12px;color:var(--muted);margin-bottom:14px;line-height:1.6;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px}
-.print-section{margin-bottom:10px}
-.print-hdr{display:flex;justify-content:space-between;align-items:center;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px 14px;margin-bottom:6px}
-.print-cat{font-family:var(--display);font-size:14px;font-weight:700}
-.print-cnt{font-size:11px;color:var(--warn)}
-.print-btn{display:flex;align-items:center;justify-content:center;gap:6px;padding:9px 14px;background:var(--accent-dim);border:1px solid rgba(0,229,160,.3);border-radius:8px;color:var(--accent);font-family:var(--mono);font-size:12px;cursor:pointer;width:100%}
-.print-btn:active{background:rgba(0,229,160,.2)}
-.print-all-btn{display:flex;align-items:center;justify-content:center;gap:6px;padding:12px 14px;background:var(--accent);border:none;border-radius:10px;color:#000;font-family:var(--display);font-size:13px;font-weight:700;cursor:pointer;width:100%;margin-top:6px}
-/* MODAL */
-.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:200;align-items:flex-end;justify-content:center}
-.modal-overlay.open{display:flex}
-.modal{background:var(--surface);border:1px solid var(--border);border-radius:20px 20px 0 0;padding:20px;width:100%;max-width:480px;animation:slideUp .25s ease}
-@keyframes slideUp{from{transform:translateY(60px);opacity:0}to{transform:translateY(0);opacity:1}}
-.modal-handle{width:36px;height:4px;background:var(--border);border-radius:2px;margin:0 auto 18px}
-.modal-partno{font-family:var(--display);font-size:22px;font-weight:800;margin-bottom:4px}
-.modal-row{display:flex;justify-content:space-between;align-items:center;padding:11px 0;border-bottom:1px solid var(--border);font-size:13px}
-.modal-row:last-of-type{border-bottom:none}
-.modal-key{color:var(--muted)}
-.modal-status-big{display:flex;align-items:center;gap:8px;margin-top:14px;padding:13px 16px;border-radius:12px;font-family:var(--display);font-size:15px;font-weight:700}
-.msb-done{background:var(--accent-dim);color:var(--accent);border:1px solid rgba(0,229,160,.25)}
-.msb-pend{background:var(--warn-dim);color:var(--warn);border:1px solid rgba(255,184,0,.25)}
-.msb-xtra{background:var(--purple-dim);color:var(--purple);border:1px solid rgba(179,136,255,.25)}
-.modal-close{width:100%;margin-top:10px;padding:12px;background:var(--surface2);border:1px solid var(--border);border-radius:10px;color:var(--muted);font-family:var(--mono);font-size:13px;cursor:pointer}
+:root {
+  --bg: #141820;
+  --bg2: #1a2030;
+  --surface: #1e2535;
+  --surface2: #252e40;
+  --surface3: #2d3850;
+  --border: #2e3a52;
+  --border2: #3a4860;
+  --accent: #3b82f6;
+  --accent-bright: #60a5fa;
+  --accent-dim: rgba(59,130,246,0.12);
+  --accent-glow: rgba(59,130,246,0.25);
+  --green: #22c55e;
+  --green-dim: rgba(34,197,94,0.12);
+  --warn: #f59e0b;
+  --warn-dim: rgba(245,158,11,0.12);
+  --danger: #ef4444;
+  --danger-dim: rgba(239,68,68,0.1);
+  --purple: #a78bfa;
+  --purple-dim: rgba(167,139,250,0.12);
+  --cyan: #06b6d4;
+  --cyan-dim: rgba(6,182,212,0.12);
+  --text: #e8edf5;
+  --text2: #a0aec0;
+  --text3: #64748b;
+  --mono: 'JetBrains Mono', monospace;
+  --display: 'Outfit', sans-serif;
+  --radius: 12px;
+  --shadow: 0 4px 24px rgba(0,0,0,0.3);
+}
+.light {
+  --bg: #f0f4f8;
+  --bg2: #e8eef5;
+  --surface: #ffffff;
+  --surface2: #f5f8fc;
+  --surface3: #eaf0f8;
+  --border: #d1dce8;
+  --border2: #bccad8;
+  --accent: #2563eb;
+  --accent-bright: #3b82f6;
+  --accent-dim: rgba(37,99,235,0.08);
+  --accent-glow: rgba(37,99,235,0.15);
+  --green: #16a34a;
+  --green-dim: rgba(22,163,74,0.08);
+  --warn: #d97706;
+  --warn-dim: rgba(217,119,6,0.08);
+  --danger: #dc2626;
+  --danger-dim: rgba(220,38,38,0.08);
+  --purple: #7c3aed;
+  --purple-dim: rgba(124,58,237,0.08);
+  --cyan: #0891b2;
+  --cyan-dim: rgba(8,145,178,0.08);
+  --text: #0f172a;
+  --text2: #475569;
+  --text3: #94a3b8;
+  --shadow: 0 4px 24px rgba(0,0,0,0.08);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+body { background: var(--bg); color: var(--text); font-family: var(--display); min-height: 100vh; transition: background .25s, color .25s; }
+
+/* SCROLLBAR */
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 4px; }
+
+/* ── HEADER ── */
+.header {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 0 20px;
+  position: sticky; top: 0; z-index: 100;
+  box-shadow: var(--shadow);
+}
+.header-inner {
+  display: flex; align-items: center; justify-content: space-between;
+  height: 58px; gap: 12px;
+}
+.brand-wrap { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+.brand-icon {
+  width: 32px; height: 32px; background: var(--accent);
+  border-radius: 8px; display: flex; align-items: center; justify-content: center;
+  font-size: 15px; flex-shrink: 0;
+}
+.brand-text { line-height: 1; }
+.brand-main { font-family: var(--display); font-size: 14px; font-weight: 800; color: var(--text); letter-spacing: -.01em; }
+.brand-sub { font-family: var(--mono); font-size: 9px; color: var(--text3); text-transform: uppercase; letter-spacing: .1em; margin-top: 2px; }
+.header-actions { display: flex; gap: 8px; align-items: center; }
+.hbtn {
+  display: flex; align-items: center; gap: 5px;
+  padding: 6px 12px; border-radius: 8px;
+  background: var(--surface2); border: 1px solid var(--border);
+  color: var(--text2); font-family: var(--mono); font-size: 11px;
+  cursor: pointer; transition: all .15s; white-space: nowrap;
+}
+.hbtn:hover { border-color: var(--accent); color: var(--accent); }
+.hbtn.accent { background: var(--accent); border-color: var(--accent); color: #fff; }
+.hbtn.accent:hover { background: var(--accent-bright); }
+.spin { animation: spin .7s linear infinite; display: inline-block; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* SEARCH BAR in header */
+.header-search {
+  flex: 1; max-width: 340px;
+  position: relative;
+}
+.header-search input {
+  width: 100%; background: var(--surface2);
+  border: 1.5px solid var(--border); border-radius: 8px;
+  padding: 8px 12px 8px 34px;
+  font-family: var(--mono); font-size: 13px; color: var(--text);
+  outline: none; transition: border-color .15s;
+}
+.header-search input:focus { border-color: var(--accent); }
+.header-search input::placeholder { color: var(--text3); }
+.header-search .si { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: var(--text3); font-size: 14px; pointer-events: none; }
+
+/* ── TABS ── */
+.tabs {
+  display: flex; background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 0 20px; gap: 4px;
+  overflow-x: auto; scrollbar-width: none;
+}
+.tabs::-webkit-scrollbar { display: none; }
+.tab {
+  flex-shrink: 0; padding: 12px 16px;
+  font-family: var(--display); font-size: 12px; font-weight: 600;
+  color: var(--text3); cursor: pointer;
+  border-bottom: 2px solid transparent;
+  background: none; border-top: none; border-left: none; border-right: none;
+  border-bottom: 2px solid transparent;
+  transition: color .15s; white-space: nowrap; letter-spacing: .01em;
+}
+.tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+/* ── SYNC BAR ── */
+.sync-bar {
+  font-family: var(--mono); font-size: 10px;
+  padding: 6px 20px; text-align: center;
+  color: var(--text3); background: var(--bg2);
+  border-bottom: 1px solid var(--border);
+  letter-spacing: .03em;
+}
+.sync-bar.ok { color: var(--green); }
+.sync-bar.err { color: var(--danger); }
+
+/* ── VIEWS ── */
+.view { display: none; }
+.view.active { display: block; }
+
+/* ── FILTERS ── */
+.filter-row {
+  display: flex; gap: 6px; padding: 12px 20px;
+  overflow-x: auto; scrollbar-width: none;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg2);
+}
+.filter-row::-webkit-scrollbar { display: none; }
+.fbtn {
+  flex-shrink: 0; padding: 5px 13px;
+  border-radius: 20px; border: 1px solid var(--border2);
+  background: transparent; color: var(--text3);
+  font-family: var(--mono); font-size: 11px; cursor: pointer;
+  transition: all .15s; white-space: nowrap;
+}
+.fbtn:hover { border-color: var(--accent); color: var(--accent); }
+.fbtn.active { background: var(--accent-dim); border-color: var(--accent); color: var(--accent-bright); }
+
+/* ── STATS BAR ── */
+.stats-row {
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+}
+.stat-cell {
+  padding: 12px 8px; text-align: center;
+  border-right: 1px solid var(--border);
+}
+.stat-cell:last-child { border-right: none; }
+.stat-val {
+  font-family: var(--display); font-size: 22px; font-weight: 800;
+  display: block; line-height: 1;
+}
+.stat-lbl {
+  font-family: var(--mono); font-size: 9px; text-transform: uppercase;
+  letter-spacing: .1em; color: var(--text3); display: block; margin-top: 3px;
+}
+.sv-total { color: var(--text); }
+.sv-done { color: var(--green); }
+.sv-pend { color: var(--warn); }
+.sv-erp { color: var(--cyan); }
+
+/* ── RESULTS ── */
+.results { padding: 16px 20px; }
+.sec-hdr {
+  font-family: var(--mono); font-size: 10px; text-transform: uppercase;
+  letter-spacing: .12em; color: var(--text3); margin-bottom: 10px; padding: 0 2px;
+}
+.sheet-tag {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-family: var(--mono); font-size: 10px; font-weight: 600;
+  text-transform: uppercase; letter-spacing: .08em;
+  padding: 4px 10px; border-radius: 6px; margin: 14px 0 8px;
+}
+.sheet-tag.runner { background: var(--green-dim); color: var(--green); border: 1px solid rgba(34,197,94,.2); }
+.sheet-tag.extra { background: var(--purple-dim); color: var(--purple); border: 1px solid rgba(167,139,250,.2); }
+
+/* ── PART CARDS ── */
+.part-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+  margin-bottom: 8px;
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  cursor: pointer; transition: all .15s;
+  position: relative; overflow: hidden;
+}
+.part-card::before {
+  content: ''; position: absolute; left: 0; top: 0; bottom: 0;
+  width: 3px; border-radius: 3px 0 0 3px;
+}
+.part-card.c-done::before { background: var(--green); }
+.part-card.c-pend::before { background: var(--warn); }
+.part-card.c-erp::before { background: var(--cyan); }
+.part-card.c-xtra::before { background: var(--purple); }
+.part-card:hover { background: var(--surface2); border-color: var(--border2); transform: translateY(-1px); box-shadow: var(--shadow); }
+.part-info { flex: 1; min-width: 0; }
+.part-no { font-family: var(--display); font-size: 15px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.part-meta { font-family: var(--mono); font-size: 10px; color: var(--text3); margin-top: 3px; display: flex; gap: 10px; }
+.badge {
+  flex-shrink: 0; padding: 4px 10px; border-radius: 20px;
+  font-family: var(--mono); font-size: 10px; font-weight: 600;
+  text-transform: uppercase; letter-spacing: .04em;
+}
+.b-done { background: var(--green-dim); color: var(--green); border: 1px solid rgba(34,197,94,.25); }
+.b-pend { background: var(--warn-dim); color: var(--warn); border: 1px solid rgba(245,158,11,.25); }
+.b-erp  { background: var(--cyan-dim); color: var(--cyan); border: 1px solid rgba(6,182,212,.25); }
+.b-xtra { background: var(--purple-dim); color: var(--purple); border: 1px solid rgba(167,139,250,.25); }
+
+/* ── EMPTY / NOT FOUND ── */
+.empty { text-align: center; padding: 60px 20px; color: var(--text3); }
+.empty-icon { font-size: 44px; margin-bottom: 12px; opacity: .6; }
+.empty-text { font-size: 13px; line-height: 1.7; font-family: var(--mono); }
+.nf { text-align: center; padding: 50px 20px; }
+.nf-icon { font-size: 40px; margin-bottom: 10px; }
+.nf-title { font-family: var(--display); font-size: 17px; font-weight: 700; color: var(--danger); margin-bottom: 6px; }
+.nf-sub { font-family: var(--mono); font-size: 12px; color: var(--text3); }
+.nf-chip { display: inline-block; margin-top: 10px; background: var(--danger-dim); border: 1px solid rgba(239,68,68,.3); color: var(--danger); padding: 4px 12px; border-radius: 20px; font-family: var(--mono); font-size: 12px; }
+
+/* ── DASHBOARD ── */
+.dash { padding: 20px; }
+.dash-section { margin-bottom: 24px; }
+.dash-section-title {
+  font-family: var(--mono); font-size: 10px; font-weight: 600;
+  text-transform: uppercase; letter-spacing: .12em; color: var(--text3);
+  margin-bottom: 12px; display: flex; align-items: center; gap: 8px;
+}
+.dash-section-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+/* Big stat cards */
+.big-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px; }
+.big-stat {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 16px;
+  position: relative; overflow: hidden;
+}
+.big-stat::after {
+  content: ''; position: absolute; bottom: -20px; right: -10px;
+  width: 60px; height: 60px; border-radius: 50%;
+  opacity: .07;
+}
+.bs-total::after { background: var(--text); }
+.bs-done::after { background: var(--green); }
+.bs-pend::after { background: var(--warn); }
+.bs-erp::after { background: var(--cyan); }
+.big-stat-val { font-family: var(--display); font-size: 32px; font-weight: 800; line-height: 1; }
+.big-stat-lbl { font-family: var(--mono); font-size: 10px; text-transform: uppercase; letter-spacing: .1em; color: var(--text3); margin-top: 4px; }
+.bs-done .big-stat-val { color: var(--green); }
+.bs-pend .big-stat-val { color: var(--warn); }
+.bs-erp .big-stat-val { color: var(--cyan); }
+
+/* Progress */
+.progress-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 16px; margin-bottom: 10px;
+}
+.prog-hdr { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+.prog-title { font-family: var(--display); font-size: 14px; font-weight: 700; }
+.prog-pct { font-family: var(--mono); font-size: 13px; font-weight: 600; }
+.prog-bar { height: 10px; background: var(--surface3); border-radius: 10px; overflow: hidden; margin-bottom: 8px; }
+.prog-fill { height: 100%; border-radius: 10px; transition: width 1s ease; }
+.pf-sop { background: linear-gradient(90deg, var(--green), #4ade80); }
+.pf-erp { background: linear-gradient(90deg, var(--cyan), #67e8f9); }
+.prog-sub { font-family: var(--mono); font-size: 11px; color: var(--text3); }
+
+/* Category cards */
+.cat-grid { display: flex; flex-direction: column; gap: 8px; }
+.cat-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 14px 16px;
+}
+.cat-hdr { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+.cat-name { font-family: var(--display); font-size: 13px; font-weight: 700; }
+.cat-pct { font-family: var(--mono); font-size: 12px; font-weight: 600; }
+.cat-bar { height: 6px; background: var(--surface3); border-radius: 6px; overflow: hidden; margin-bottom: 8px; }
+.cat-bar-fill { height: 100%; border-radius: 6px; transition: width .8s ease; }
+.cat-nums { display: flex; gap: 12px; font-family: var(--mono); font-size: 10px; }
+.cn-done { color: var(--green); }
+.cn-pend { color: var(--warn); }
+.cn-tot { color: var(--text3); }
+
+/* ── BULK PASTE TAB ── */
+.bulk-wrap { padding: 20px; }
+.bulk-intro {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 14px 16px; margin-bottom: 16px;
+  font-family: var(--mono); font-size: 12px; color: var(--text2); line-height: 1.7;
+}
+.bulk-intro strong { color: var(--accent-bright); }
+.bulk-textarea {
+  width: 100%; min-height: 140px;
+  background: var(--surface); border: 1.5px solid var(--border);
+  border-radius: var(--radius); padding: 14px;
+  font-family: var(--mono); font-size: 13px; color: var(--text);
+  resize: vertical; outline: none; transition: border-color .15s;
+  line-height: 1.6;
+}
+.bulk-textarea:focus { border-color: var(--accent); }
+.bulk-textarea::placeholder { color: var(--text3); }
+.bulk-actions { display: flex; gap: 8px; margin-top: 10px; }
+.btn {
+  padding: 10px 18px; border-radius: 9px; border: none; cursor: pointer;
+  font-family: var(--display); font-size: 13px; font-weight: 600;
+  transition: all .15s; display: flex; align-items: center; gap: 6px;
+}
+.btn-primary { background: var(--accent); color: #fff; }
+.btn-primary:hover { background: var(--accent-bright); }
+.btn-ghost { background: var(--surface2); border: 1px solid var(--border); color: var(--text2); }
+.btn-ghost:hover { border-color: var(--border2); color: var(--text); }
+.bulk-results { margin-top: 16px; }
+.bulk-summary {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 16px;
+}
+.bs-chip {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 10px; padding: 12px; text-align: center;
+}
+.bs-chip-val { font-family: var(--display); font-size: 24px; font-weight: 800; display: block; }
+.bs-chip-lbl { font-family: var(--mono); font-size: 9px; text-transform: uppercase; letter-spacing: .1em; color: var(--text3); margin-top: 2px; display: block; }
+.bulk-group { margin-bottom: 16px; }
+.bulk-group-hdr {
+  display: flex; align-items: center; gap: 8px;
+  font-family: var(--mono); font-size: 10px; font-weight: 600;
+  text-transform: uppercase; letter-spacing: .1em; margin-bottom: 8px;
+}
+.bulk-chip {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 3px 10px; border-radius: 6px; font-size: 10px;
+}
+.bc-done { background: var(--green-dim); color: var(--green); }
+.bc-pend { background: var(--warn-dim); color: var(--warn); }
+.bc-nf { background: var(--danger-dim); color: var(--danger); }
+.bc-erp { background: var(--cyan-dim); color: var(--cyan); }
+.bulk-part-row {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 9px; padding: 10px 14px;
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 6px; font-family: var(--mono); font-size: 12px;
+}
+.bpr-no { font-weight: 600; color: var(--text); }
+.bpr-meta { color: var(--text3); font-size: 11px; margin-top: 2px; }
+
+/* ── ERP TAB ── */
+.erp-wrap { padding: 20px; }
+.erp-stats { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 16px; }
+.erp-stat {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 14px; text-align: center;
+}
+.erp-stat-val { font-family: var(--display); font-size: 26px; font-weight: 800; display: block; line-height: 1; }
+.erp-stat-lbl { font-family: var(--mono); font-size: 9px; text-transform: uppercase; letter-spacing: .1em; color: var(--text3); margin-top: 4px; display: block; }
+.es-uploaded .erp-stat-val { color: var(--cyan); }
+.es-pending .erp-stat-val { color: var(--warn); }
+.es-total .erp-stat-val { color: var(--text); }
+
+/* ── PRINT TAB ── */
+.print-wrap { padding: 20px; }
+.print-intro {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 14px 16px; margin-bottom: 16px;
+  font-family: var(--mono); font-size: 12px; color: var(--text2); line-height: 1.6;
+}
+
+/* WhatsApp box */
+.wa-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 16px; margin-bottom: 16px;
+}
+.wa-title {
+  font-family: var(--display); font-size: 13px; font-weight: 700;
+  margin-bottom: 10px; display: flex; align-items: center; gap: 6px;
+}
+.wa-preview {
+  background: var(--bg2); border: 1px solid var(--border);
+  border-radius: 9px; padding: 12px 14px;
+  font-family: var(--mono); font-size: 12px; color: var(--text2);
+  line-height: 1.8; margin-bottom: 10px; white-space: pre-wrap;
+}
+.wa-actions { display: flex; gap: 8px; }
+.btn-wa { background: #25d366; color: #fff; border: none; }
+.btn-wa:hover { background: #1da853; }
+
+/* Print sections */
+.print-section { margin-bottom: 10px; }
+.print-hdr {
+  display: flex; justify-content: space-between; align-items: center;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 10px; padding: 13px 16px; margin-bottom: 6px;
+}
+.print-cat { font-family: var(--display); font-size: 14px; font-weight: 700; }
+.print-cnt { font-family: var(--mono); font-size: 11px; color: var(--warn); }
+.print-btn {
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+  padding: 10px 14px; background: var(--accent-dim);
+  border: 1px solid rgba(59,130,246,.25); border-radius: 9px;
+  color: var(--accent-bright); font-family: var(--mono); font-size: 12px;
+  cursor: pointer; width: 100%; transition: all .15s;
+}
+.print-btn:hover { background: var(--accent-glow); }
+.print-all-btn {
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  padding: 13px 14px; background: var(--accent); border: none;
+  border-radius: 10px; color: #fff; font-family: var(--display);
+  font-size: 13px; font-weight: 700; cursor: pointer; width: 100%;
+  margin-top: 8px; transition: background .15s;
+}
+.print-all-btn:hover { background: var(--accent-bright); }
+
+/* ── MODAL ── */
+.modal-overlay {
+  display: none; position: fixed; inset: 0;
+  background: rgba(0,0,0,.75); backdrop-filter: blur(4px);
+  z-index: 200; align-items: flex-end; justify-content: center;
+}
+.modal-overlay.open { display: flex; }
+.modal {
+  background: var(--surface); border: 1px solid var(--border2);
+  border-radius: 20px 20px 0 0; padding: 20px 24px 28px;
+  width: 100%; max-width: 500px;
+  animation: slideUp .22s cubic-bezier(.16,1,.3,1);
+}
+@keyframes slideUp { from { transform: translateY(50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+.modal-handle { width: 36px; height: 4px; background: var(--border2); border-radius: 2px; margin: 0 auto 20px; }
+.modal-partno { font-family: var(--display); font-size: 24px; font-weight: 800; margin-bottom: 16px; }
+.modal-row {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 11px 0; border-bottom: 1px solid var(--border);
+  font-family: var(--mono); font-size: 12px;
+}
+.modal-row:last-of-type { border-bottom: none; }
+.modal-key { color: var(--text3); }
+.modal-val { color: var(--text); font-weight: 500; }
+.modal-status {
+  display: flex; align-items: center; gap: 10px; margin-top: 16px;
+  padding: 14px 16px; border-radius: 12px;
+  font-family: var(--display); font-size: 14px; font-weight: 700;
+}
+.ms-done { background: var(--green-dim); color: var(--green); border: 1px solid rgba(34,197,94,.2); }
+.ms-pend { background: var(--warn-dim); color: var(--warn); border: 1px solid rgba(245,158,11,.2); }
+.ms-xtra { background: var(--purple-dim); color: var(--purple); border: 1px solid rgba(167,139,250,.2); }
+.ms-erp  { background: var(--cyan-dim); color: var(--cyan); border: 1px solid rgba(6,182,212,.2); }
+.modal-erp {
+  display: flex; align-items: center; gap: 10px; margin-top: 8px;
+  padding: 10px 16px; border-radius: 10px;
+  font-family: var(--mono); font-size: 12px; font-weight: 500;
+}
+.me-up { background: var(--cyan-dim); color: var(--cyan); border: 1px solid rgba(6,182,212,.2); }
+.me-notup { background: var(--warn-dim); color: var(--warn); border: 1px solid rgba(245,158,11,.2); }
+.modal-close {
+  width: 100%; margin-top: 14px; padding: 12px;
+  background: var(--surface2); border: 1px solid var(--border);
+  border-radius: 10px; color: var(--text2); font-family: var(--mono);
+  font-size: 13px; cursor: pointer; transition: all .15s;
+}
+.modal-close:hover { border-color: var(--border2); color: var(--text); }
+
+/* ── DIVIDER ── */
+.divider { height: 1px; background: var(--border); margin: 16px 0; }
 </style>
 </head>
 <body>
 
 <!-- HEADER -->
 <div class="header">
-  <div class="header-top">
-    <div class="brand">MRP AutoRub — SOP Checker</div>
-    <div class="hbtns">
-      <button class="icon-btn" onclick="toggleTheme()" id="themeBtn">☀ Light</button>
-      <button class="icon-btn" onclick="loadData()"><span id="sIcon">↻</span> <span id="sLabel">Sync</span></button>
+  <div class="header-inner">
+    <div class="brand-wrap">
+      <div class="brand-icon">📋</div>
+      <div class="brand-text">
+        <div class="brand-main">SOP Checker</div>
+        <div class="brand-sub">MRP AutoRub</div>
+      </div>
     </div>
-  </div>
-  <div class="search-wrap">
-    <span class="search-icon">⌕</span>
-    <input type="search" id="search" placeholder="Type part number..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+    <div class="header-search">
+      <span class="si">⌕</span>
+      <input type="search" id="search" placeholder="Search part number..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+    </div>
+    <div class="header-actions">
+      <button class="hbtn" onclick="toggleTheme()" id="themeBtn">🌙</button>
+      <button class="hbtn" onclick="loadData()"><span id="sIcon">↻</span> <span id="sLabel">Sync</span></button>
+    </div>
   </div>
 </div>
 
 <!-- TABS -->
 <div class="tabs">
   <button class="tab active" onclick="switchTab('search')">🔍 Search</button>
+  <button class="tab" onclick="switchTab('bulk')">📋 Bulk Check</button>
+  <button class="tab" onclick="switchTab('erp')">⬆ ERP Status</button>
   <button class="tab" onclick="switchTab('dashboard')">📊 Dashboard</button>
-  <button class="tab" onclick="switchTab('print')">🖨 Print List</button>
+  <button class="tab" onclick="switchTab('print')">🖨 Print</button>
 </div>
 
-<!-- ══════ SEARCH VIEW ══════ -->
+<!-- ══ SEARCH VIEW ══ -->
 <div class="view active" id="view-search">
-  <div class="filters">
-    <button class="filter-btn active" data-filter="all">All</button>
-    <button class="filter-btn" data-filter="COMPLETED">✓ Done</button>
-    <button class="filter-btn" data-filter="PENDING">⏳ Pending</button>
-    <button class="filter-btn" data-filter="EXTRA">⭐ Extra</button>
-    <button class="filter-btn" data-filter="EPDM">EPDM</button>
-    <button class="filter-btn" data-filter="SILICONE">Silicone</button>
-    <button class="filter-btn" data-filter="NITRILE">Nitrile</button>
-    <button class="filter-btn" data-filter="BREATHER">Breather</button>
-    <button class="filter-btn" data-filter="PACKING">Packing</button>
+  <div class="filter-row">
+    <button class="fbtn active" data-filter="all">All</button>
+    <button class="fbtn" data-filter="COMPLETED">✓ Done</button>
+    <button class="fbtn" data-filter="PENDING">⏳ Pending</button>
+    <button class="fbtn" data-filter="UPLOADED">⬆ Uploaded</button>
+    <button class="fbtn" data-filter="EXTRA">⭐ Extra</button>
+    <button class="fbtn" data-filter="EPDM">EPDM</button>
+    <button class="fbtn" data-filter="SILICONE">Silicone</button>
+    <button class="fbtn" data-filter="NITRILE">Nitrile</button>
+    <button class="fbtn" data-filter="BREATHER">Breather</button>
+    <button class="fbtn" data-filter="PACKING">Packing</button>
+    <button class="fbtn" data-filter="WIRE HOSE">Wire Hose</button>
   </div>
-  <div class="stats-bar">
-    <div class="stat total"><span class="stat-num" id="st1">—</span><span class="stat-label">Total</span></div>
-    <div class="stat done"><span class="stat-num" id="st2">—</span><span class="stat-label">Done</span></div>
-    <div class="stat pend"><span class="stat-num" id="st3">—</span><span class="stat-label">Pending</span></div>
-    <div class="stat xtra"><span class="stat-num" id="st4">—</span><span class="stat-label">Extra</span></div>
+  <div class="stats-row">
+    <div class="stat-cell"><span class="stat-val sv-total" id="st1">—</span><span class="stat-lbl">Total</span></div>
+    <div class="stat-cell"><span class="stat-val sv-done" id="st2">—</span><span class="stat-lbl">Done</span></div>
+    <div class="stat-cell"><span class="stat-val sv-pend" id="st3">—</span><span class="stat-lbl">Pending</span></div>
+    <div class="stat-cell"><span class="stat-val sv-erp" id="st4">—</span><span class="stat-lbl">Uploaded</span></div>
   </div>
-  <div class="sync-bar" id="syncBar">Loading...</div>
+  <div class="sync-bar" id="syncBar">Connecting...</div>
   <div class="results" id="searchResults">
-    <div class="empty"><div class="empty-icon">🔍</div><div class="empty-text">Type a part number to check its SOP status</div></div>
+    <div class="empty"><div class="empty-icon">🔍</div><div class="empty-text">Search a part number above<br>or use filters to browse</div></div>
   </div>
 </div>
 
-<!-- ══════ DASHBOARD VIEW ══════ -->
+<!-- ══ BULK CHECK VIEW ══ -->
+<div class="view" id="view-bulk">
+  <div class="bulk-wrap">
+    <div class="bulk-intro">
+      <strong>Bulk Part Checker</strong> — Paste your entire production list below, one part number per line (or space/comma separated). The app will instantly check each part's SOP and ERP status.
+    </div>
+    <textarea class="bulk-textarea" id="bulkInput" placeholder="Paste part numbers here...&#10;e.g.&#10;824009499&#10;144632VA5B&#10;F9V05658&#10;FDB00858"></textarea>
+    <div class="bulk-actions">
+      <button class="btn btn-primary" onclick="runBulkCheck()">⚡ Check All</button>
+      <button class="btn btn-ghost" onclick="clearBulk()">✕ Clear</button>
+    </div>
+    <div id="bulkResults"></div>
+  </div>
+</div>
+
+<!-- ══ ERP STATUS VIEW ══ -->
+<div class="view" id="view-erp">
+  <div class="sync-bar" id="syncBar3">Connecting...</div>
+  <div class="erp-wrap" id="erpContent">
+    <div class="empty"><div class="empty-icon">⬆</div><div class="empty-text">Loading ERP data...</div></div>
+  </div>
+</div>
+
+<!-- ══ DASHBOARD VIEW ══ -->
 <div class="view" id="view-dashboard">
-  <div class="sync-bar" id="syncBar2">Loading...</div>
+  <div class="sync-bar" id="syncBar2">Connecting...</div>
   <div class="dash" id="dashContent">
     <div class="empty"><div class="empty-icon">📊</div><div class="empty-text">Loading dashboard...</div></div>
   </div>
 </div>
 
-<!-- ══════ PRINT VIEW ══════ -->
+<!-- ══ PRINT VIEW ══ -->
 <div class="view" id="view-print">
-  <div class="print-view" id="printContent">
+  <div class="print-wrap" id="printContent">
     <div class="empty"><div class="empty-icon">🖨</div><div class="empty-text">Loading...</div></div>
   </div>
 </div>
@@ -188,229 +601,428 @@ body{background:var(--bg);color:var(--text);font-family:var(--mono);min-height:1
   <div class="modal">
     <div class="modal-handle"></div>
     <div class="modal-partno" id="mPartNo"></div>
-    <div class="modal-row"><span class="modal-key">Material</span><span id="mMat"></span></div>
-    <div class="modal-row"><span class="modal-key">S.No</span><span id="mSno"></span></div>
-    <div class="modal-row"><span class="modal-key">List</span><span id="mList"></span></div>
-    <div class="modal-status-big" id="mStatus"></div>
+    <div class="modal-row"><span class="modal-key">Material</span><span class="modal-val" id="mMat"></span></div>
+    <div class="modal-row"><span class="modal-key">S.No</span><span class="modal-val" id="mSno"></span></div>
+    <div class="modal-row"><span class="modal-key">List</span><span class="modal-val" id="mList"></span></div>
+    <div class="modal-row"><span class="modal-key">Date Completed</span><span class="modal-val" id="mDate"></span></div>
+    <div class="modal-status" id="mStatus"></div>
+    <div class="modal-erp" id="mErp" style="display:none"></div>
     <button class="modal-close" onclick="document.getElementById('modalOverlay').classList.remove('open')">Close</button>
   </div>
 </div>
 
 <script>
-const S1='https://docs.google.com/spreadsheets/d/e/2PACX-1vRmEC3eQtpQEv5kydGZhhlDs9tQca6nvoGYRe9tEZyjW7J3yigfWIHMN5yoRZhZjoaT0tTnIre0faQw/pub?gid=1204003115&single=true&output=csv';
-const S2='https://docs.google.com/spreadsheets/d/e/2PACX-1vRmEC3eQtpQEv5kydGZhhlDs9tQca6nvoGYRe9tEZyjW7J3yigfWIHMN5yoRZhZjoaT0tTnIre0faQw/pub?gid=84377336&single=true&output=csv';
+const S1 = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRmEC3eQtpQEv5kydGZhhlDs9tQca6nvoGYRe9tEZyjW7J3yigfWIHMN5yoRZhZjoaT0tTnIre0faQw/pub?gid=1204003115&single=true&output=csv';
+const S2 = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRmEC3eQtpQEv5kydGZhhlDs9tQca6nvoGYRe9tEZyjW7J3yigfWIHMN5yoRZhZjoaT0tTnIre0faQw/pub?gid=84377336&single=true&output=csv';
 
-let RUNNER=[],EXTRA=[],currentFilter='all',searchQ='';
-let isDark=localStorage.getItem('sop_theme')!=='light';
+let RUNNER = [], EXTRA = [], currentFilter = 'all', searchQ = '';
+let isDark = localStorage.getItem('sop_theme') !== 'light';
 
-const CAT_COLORS={EPDM:'#00e5a0',SILICONE:'#b388ff',NITRILE:'#ffb800',BREATHER:'#ff8a65',PACKING:'#4fc3f7','WIRE HOSE':'#f06292',OTHER:'#888'};
+const CAT_COLORS = { EPDM:'#22c55e', SILICONE:'#a78bfa', NITRILE:'#f59e0b', BREATHER:'#fb923c', PACKING:'#38bdf8', 'WIRE HOSE':'#f472b6', OTHER:'#64748b' };
 
-function applyTheme(){
-  document.body.classList.toggle('light',!isDark);
-  document.getElementById('themeBtn').textContent=isDark?'☀ Light':'🌙 Dark';
+function applyTheme() {
+  document.body.classList.toggle('light', !isDark);
+  document.getElementById('themeBtn').textContent = isDark ? '☀️' : '🌙';
 }
-function toggleTheme(){isDark=!isDark;localStorage.setItem('sop_theme',isDark?'dark':'light');applyTheme();}
+function toggleTheme() { isDark = !isDark; localStorage.setItem('sop_theme', isDark ? 'dark' : 'light'); applyTheme(); }
 applyTheme();
 
-function parseCSV(text,source){
-  const lines=text.trim().split('\n');
-  const parts=[];
-  for(let i=1;i<lines.length;i++){
-    const cols=lines[i].split(',').map(c=>c.trim().replace(/"/g,''));
-    if(source==='extra'){
-      if(cols[1]) parts.push({sno:cols[0]||i,partNo:cols[1],material:cols[2]||'',status:'EXTRA',source});
+function parseCSV(text, source) {
+  const lines = text.trim().split('\n');
+  const parts = [];
+  for (let i = 1; i < lines.length; i++) {
+    const cols = lines[i].split(',').map(c => c.trim().replace(/"/g, ''));
+    if (source === 'extra') {
+      if (cols[1]) parts.push({ sno: cols[0] || i, partNo: cols[1], material: cols[2] || '', status: 'EXTRA', erpUpload: '', dateCompleted: '', source });
     } else {
-      if(cols[1]) parts.push({sno:cols[0]||i,partNo:cols[1],material:cols[2]||'',status:(cols[3]||'PENDING').toUpperCase().trim(),source});
+      if (cols[1]) parts.push({
+        sno: cols[0] || i, partNo: cols[1], material: cols[2] || '',
+        status: (cols[3] || 'PENDING').toUpperCase().trim(),
+        erpUpload: (cols[4] || '').toUpperCase().trim(),
+        dateCompleted: cols[5] || '',
+        source
+      });
     }
   }
   return parts;
 }
 
-async function loadData(){
-  const icon=document.getElementById('sIcon'),label=document.getElementById('sLabel');
-  icon.className='spin'; label.textContent='Syncing...';
-  setSync('Fetching from Google Sheets...','');
-  try{
-    const[r1,r2]=await Promise.all([fetch(S1+'&t='+Date.now()),fetch(S2+'&t='+Date.now())]);
-    const[t1,t2]=await Promise.all([r1.text(),r2.text()]);
-    RUNNER=parseCSV(t1,'runner'); EXTRA=parseCSV(t2,'extra');
-    const time=new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
-    setSync(`✓ Live — Runner: ${RUNNER.length} | Extra: ${EXTRA.length} | Synced: ${time}`,'ok');
-    icon.className=''; label.textContent='Sync';
+async function loadData() {
+  const icon = document.getElementById('sIcon'), label = document.getElementById('sLabel');
+  icon.className = 'spin'; label.textContent = 'Syncing...';
+  setSync('Fetching from Google Sheets...', '');
+  try {
+    const [r1, r2] = await Promise.all([fetch(S1 + '&t=' + Date.now()), fetch(S2 + '&t=' + Date.now())]);
+    const [t1, t2] = await Promise.all([r1.text(), r2.text()]);
+    RUNNER = parseCSV(t1, 'runner'); EXTRA = parseCSV(t2, 'extra');
+    const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    setSync(`✓ Live — Runner: ${RUNNER.length} | Extra: ${EXTRA.length} | Synced: ${time}`, 'ok');
+    icon.className = ''; label.textContent = 'Sync';
     renderAll();
-  }catch(e){
-    setSync('⚠ Sync failed — check internet','err');
-    icon.className=''; label.textContent='Retry';
+  } catch (e) {
+    setSync('⚠ Sync failed — check connection', 'err');
+    icon.className = ''; label.textContent = 'Retry';
   }
 }
 
-function setSync(msg,cls){
-  ['syncBar','syncBar2'].forEach(id=>{const el=document.getElementById(id);if(el){el.textContent=msg;el.className='sync-bar '+cls;}});
-}
-
-function norm(s){return s.replace(/\s+/g,'').toUpperCase();}
-function allParts(){return[...RUNNER,...EXTRA];}
-
-function renderAll(){renderSearch();renderDashboard();renderPrint();}
-
-// ── SEARCH ──
-function getFiltered(){
-  return allParts().filter(p=>{
-    const q=norm(searchQ);
-    const ms=!q||norm(p.partNo).includes(q);
-    const mf=currentFilter==='all'||p.status===currentFilter||p.material.toUpperCase()===currentFilter;
-    return ms&&mf;
+function setSync(msg, cls) {
+  ['syncBar', 'syncBar2', 'syncBar3'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) { el.textContent = msg; el.className = 'sync-bar ' + cls; }
   });
 }
 
-function renderSearch(){
-  const filtered=getFiltered();
-  document.getElementById('st1').textContent=filtered.length;
-  document.getElementById('st2').textContent=filtered.filter(p=>p.status==='COMPLETED').length;
-  document.getElementById('st3').textContent=filtered.filter(p=>p.status==='PENDING').length;
-  document.getElementById('st4').textContent=filtered.filter(p=>p.source==='extra').length;
-  const el=document.getElementById('searchResults');
-  if(!searchQ&&currentFilter==='all'){
-    el.innerHTML=`<div class="empty"><div class="empty-icon">🔍</div><div class="empty-text">Type a part number to check its SOP status</div></div>`;return;
-  }
-  if(searchQ&&filtered.length===0){
-    el.innerHTML=`<div class="nf"><div class="nf-icon">⚠</div><div class="nf-title">Not Found</div><div class="nf-sub">Not in runner list or extra parts.</div><div class="nf-part">${searchQ}</div></div>`;return;
-  }
-  const runner=filtered.filter(p=>p.source==='runner');
-  const extra=filtered.filter(p=>p.source==='extra');
-  let html=`<div class="sec-label">${filtered.length} part${filtered.length!==1?'s':''} found</div>`;
-  if(runner.length){
-    if(extra.length) html+=`<div class="sheet-lbl runner">✓ Runner Parts List</div>`;
-    runner.forEach(p=>{html+=makeCard(p);});
-  }
-  if(extra.length){
-    if(runner.length) html+=`<div class="sheet-lbl extra">⭐ Extra Parts</div>`;
-    extra.forEach(p=>{html+=makeCard(p);});
-  }
-  el.innerHTML=html;
+function norm(s) { return s.replace(/\s+/g, '').toUpperCase(); }
+function allParts() { return [...RUNNER, ...EXTRA]; }
+function renderAll() { renderSearch(); renderDashboard(); renderERP(); renderPrint(); }
+
+// ── SEARCH ──
+function getFiltered() {
+  return allParts().filter(p => {
+    const q = norm(searchQ);
+    const ms = !q || norm(p.partNo).includes(q);
+    let mf = true;
+    if (currentFilter === 'UPLOADED') mf = p.erpUpload === 'UPLOADED';
+    else if (currentFilter === 'EXTRA') mf = p.source === 'extra';
+    else if (currentFilter === 'all') mf = true;
+    else if (['COMPLETED','PENDING'].includes(currentFilter)) mf = p.status === currentFilter;
+    else mf = p.material.toUpperCase() === currentFilter;
+    return ms && mf;
+  });
 }
 
-function makeCard(p){
-  const isDone=p.status==='COMPLETED',isX=p.source==='extra';
-  const cls=isX?'xtra':(isDone?'completed':'pending');
-  const badge=isX?`<div class="badge b-xtra">⭐ Extra</div>`:isDone?`<div class="badge b-done">✓ Done</div>`:`<div class="badge b-pend">⏳ Pending</div>`;
+function renderSearch() {
+  const filtered = getFiltered();
+  document.getElementById('st1').textContent = filtered.length;
+  document.getElementById('st2').textContent = filtered.filter(p => p.status === 'COMPLETED').length;
+  document.getElementById('st3').textContent = filtered.filter(p => p.status === 'PENDING').length;
+  document.getElementById('st4').textContent = filtered.filter(p => p.erpUpload === 'UPLOADED').length;
+  const el = document.getElementById('searchResults');
+  if (!searchQ && currentFilter === 'all') {
+    el.innerHTML = `<div class="empty"><div class="empty-icon">🔍</div><div class="empty-text">Search a part number above<br>or use filters to browse</div></div>`; return;
+  }
+  if (searchQ && filtered.length === 0) {
+    el.innerHTML = `<div class="nf"><div class="nf-icon">⚠️</div><div class="nf-title">Not Found</div><div class="nf-sub">Not in runner list or extra parts.</div><div class="nf-chip">${searchQ}</div></div>`; return;
+  }
+  const runner = filtered.filter(p => p.source === 'runner');
+  const extra = filtered.filter(p => p.source === 'extra');
+  let html = `<div class="sec-hdr">${filtered.length} part${filtered.length !== 1 ? 's' : ''} found</div>`;
+  if (runner.length) {
+    if (extra.length) html += `<div class="sheet-tag runner">✓ Runner Parts</div>`;
+    runner.forEach(p => { html += makeCard(p); });
+  }
+  if (extra.length) {
+    if (runner.length) html += `<div class="sheet-tag extra">⭐ Extra Parts</div>`;
+    extra.forEach(p => { html += makeCard(p); });
+  }
+  el.innerHTML = html;
+}
+
+function makeCard(p) {
+  const isX = p.source === 'extra', isDone = p.status === 'COMPLETED', isUp = p.erpUpload === 'UPLOADED';
+  let cls, badge;
+  if (isX) { cls = 'c-xtra'; badge = `<div class="badge b-xtra">⭐ Extra</div>`; }
+  else if (isDone && isUp) { cls = 'c-erp'; badge = `<div class="badge b-erp">⬆ Uploaded</div>`; }
+  else if (isDone) { cls = 'c-done'; badge = `<div class="badge b-done">✓ Done</div>`; }
+  else { cls = 'c-pend'; badge = `<div class="badge b-pend">⏳ Pending</div>`; }
   return `<div class="part-card ${cls}" onclick="showModal('${p.partNo.replace(/'/g,"\\'")}','${p.source}')">
-    <div class="part-info"><div class="part-no">${p.partNo}</div><div class="part-meta"><span>#${p.sno}</span><span>${p.material||'—'}</span></div></div>${badge}</div>`;
+    <div class="part-info">
+      <div class="part-no">${p.partNo}</div>
+      <div class="part-meta"><span>#${p.sno}</span><span>${p.material || '—'}</span></div>
+    </div>${badge}</div>`;
+}
+
+// ── BULK CHECK ──
+function runBulkCheck() {
+  const raw = document.getElementById('bulkInput').value.trim();
+  if (!raw) return;
+  const parts = raw.split(/[\n,\s]+/).map(s => s.trim().toUpperCase()).filter(Boolean);
+  const found = [], notFound = [];
+  parts.forEach(q => {
+    const match = allParts().find(p => norm(p.partNo) === norm(q));
+    if (match) found.push(match); else notFound.push(q);
+  });
+  const done = found.filter(p => p.status === 'COMPLETED' && p.erpUpload !== 'UPLOADED');
+  const uploaded = found.filter(p => p.erpUpload === 'UPLOADED');
+  const pending = found.filter(p => p.status === 'PENDING');
+  const extra = found.filter(p => p.source === 'extra');
+
+  let html = `<div class="bulk-summary">
+    <div class="bs-chip"><span class="bs-chip-val sv-done">${done.length + uploaded.length}</span><span class="bs-chip-lbl">SOP Done</span></div>
+    <div class="bs-chip"><span class="bs-chip-val sv-pend">${pending.length}</span><span class="bs-chip-lbl">Pending</span></div>
+    <div class="bs-chip"><span class="bs-chip-val" style="color:var(--danger)">${notFound.length}</span><span class="bs-chip-lbl">Not Found</span></div>
+  </div>`;
+
+  if (uploaded.length) {
+    html += `<div class="bulk-group"><div class="bulk-group-hdr"><span class="bulk-chip bc-erp">⬆ ERP Uploaded (${uploaded.length})</span></div>`;
+    uploaded.forEach(p => { html += bulkRow(p); }); html += `</div>`;
+  }
+  if (done.length) {
+    html += `<div class="bulk-group"><div class="bulk-group-hdr"><span class="bulk-chip bc-done">✓ SOP Done — Not Uploaded (${done.length})</span></div>`;
+    done.forEach(p => { html += bulkRow(p); }); html += `</div>`;
+  }
+  if (pending.length) {
+    html += `<div class="bulk-group"><div class="bulk-group-hdr"><span class="bulk-chip bc-pend">⏳ SOP Pending (${pending.length})</span></div>`;
+    pending.forEach(p => { html += bulkRow(p); }); html += `</div>`;
+  }
+  if (extra.length) {
+    html += `<div class="bulk-group"><div class="bulk-group-hdr"><span class="bulk-chip" style="background:var(--purple-dim);color:var(--purple)">⭐ Extra Parts (${extra.length})</span></div>`;
+    extra.forEach(p => { html += bulkRow(p); }); html += `</div>`;
+  }
+  if (notFound.length) {
+    html += `<div class="bulk-group"><div class="bulk-group-hdr"><span class="bulk-chip bc-nf">⚠ Not Found (${notFound.length})</span></div>`;
+    notFound.forEach(q => { html += `<div class="bulk-part-row"><div><div class="bpr-no">${q}</div><div class="bpr-meta">Not in database</div></div><div class="badge b-pend" style="background:var(--danger-dim);color:var(--danger);border-color:rgba(239,68,68,.25)">Unknown</div></div>`; });
+    html += `</div>`;
+  }
+  document.getElementById('bulkResults').innerHTML = html;
+}
+
+function bulkRow(p) {
+  const isUp = p.erpUpload === 'UPLOADED', isDone = p.status === 'COMPLETED';
+  let badge;
+  if (p.source === 'extra') badge = `<div class="badge b-xtra">⭐ Extra</div>`;
+  else if (isUp) badge = `<div class="badge b-erp">⬆ Uploaded</div>`;
+  else if (isDone) badge = `<div class="badge b-done">✓ Done</div>`;
+  else badge = `<div class="badge b-pend">⏳ Pending</div>`;
+  return `<div class="bulk-part-row"><div><div class="bpr-no">${p.partNo}</div><div class="bpr-meta">${p.material || '—'} · #${p.sno}</div></div>${badge}</div>`;
+}
+
+function clearBulk() { document.getElementById('bulkInput').value = ''; document.getElementById('bulkResults').innerHTML = ''; }
+
+// ── ERP STATUS ──
+function renderERP() {
+  const completed = RUNNER.filter(p => p.status === 'COMPLETED');
+  const uploaded = completed.filter(p => p.erpUpload === 'UPLOADED');
+  const notUploaded = completed.filter(p => p.erpUpload !== 'UPLOADED');
+  const pct = completed.length ? Math.round(uploaded.length / completed.length * 100) : 0;
+
+  // group not-uploaded by material
+  const cats = {};
+  notUploaded.forEach(p => {
+    const m = p.material || 'OTHER';
+    if (!cats[m]) cats[m] = [];
+    cats[m].push(p);
+  });
+
+  let html = `
+  <div class="erp-stats">
+    <div class="erp-stat es-total"><span class="erp-stat-val">${completed.length}</span><span class="erp-stat-lbl">SOP Done</span></div>
+    <div class="erp-stat es-uploaded"><span class="erp-stat-val">${uploaded.length}</span><span class="erp-stat-lbl">Uploaded</span></div>
+    <div class="erp-stat es-pending"><span class="erp-stat-val">${notUploaded.length}</span><span class="erp-stat-lbl">Not Uploaded</span></div>
+  </div>
+  <div class="progress-card">
+    <div class="prog-hdr"><div class="prog-title">ERP Upload Progress</div><div class="prog-pct" style="color:var(--cyan)">${pct}%</div></div>
+    <div class="prog-bar"><div class="prog-fill pf-erp" style="width:${pct}%"></div></div>
+    <div class="prog-sub">${uploaded.length} of ${completed.length} completed SOPs uploaded to ERP</div>
+  </div>`;
+
+  if (notUploaded.length === 0) {
+    html += `<div class="empty"><div class="empty-icon">🎉</div><div class="empty-text">All completed SOPs are uploaded to ERP!</div></div>`;
+  } else {
+    html += `<div class="dash-section-title" style="font-family:var(--mono);font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.12em;color:var(--text3);display:flex;align-items:center;gap:8px;margin-bottom:12px">Pending Upload by Category <span style="flex:1;height:1px;background:var(--border);display:block"></span></div>`;
+    Object.entries(cats).sort((a,b) => b[1].length - a[1].length).forEach(([cat, parts]) => {
+      html += `<div class="cat-card" style="margin-bottom:8px">
+        <div class="cat-hdr"><div class="cat-name">${cat}</div><div class="cat-pct" style="color:var(--warn)">${parts.length} pending</div></div>
+        ${parts.map(p => `<div style="display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid var(--border);font-family:var(--mono);font-size:12px">
+          <span style="color:var(--text)">${p.partNo}</span>
+          <span style="color:var(--text3)">SOP ✓ · ERP ⏳</span>
+        </div>`).join('')}
+      </div>`;
+    });
+  }
+  document.getElementById('erpContent').innerHTML = html;
 }
 
 // ── DASHBOARD ──
-function renderDashboard(){
-  const total=RUNNER.length;
-  const done=RUNNER.filter(p=>p.status==='COMPLETED').length;
-  const pct=total?Math.round(done/total*100):0;
-  const cats={};
-  RUNNER.forEach(p=>{
-    const m=p.material||'OTHER';
-    if(!cats[m]) cats[m]={done:0,total:0};
+function renderDashboard() {
+  const total = RUNNER.length;
+  const done = RUNNER.filter(p => p.status === 'COMPLETED').length;
+  const pending = total - done;
+  const uploaded = RUNNER.filter(p => p.erpUpload === 'UPLOADED').length;
+  const sopPct = total ? Math.round(done / total * 100) : 0;
+  const erpPct = done ? Math.round(uploaded / done * 100) : 0;
+
+  const cats = {};
+  RUNNER.forEach(p => {
+    const m = p.material || 'OTHER';
+    if (!cats[m]) cats[m] = { done: 0, total: 0 };
     cats[m].total++;
-    if(p.status==='COMPLETED') cats[m].done++;
+    if (p.status === 'COMPLETED') cats[m].done++;
   });
-  let html=`
-  <div class="dash-title">Overall Progress</div>
-  <div class="overall-card">
-    <div class="ov-nums">
-      <div class="ov-num"><span class="ov-val" style="color:var(--text)">${total}</span><div class="ov-lbl">Total</div></div>
-      <div class="ov-num"><span class="ov-val" style="color:var(--accent)">${done}</span><div class="ov-lbl">Done</div></div>
-      <div class="ov-num"><span class="ov-val" style="color:var(--warn)">${total-done}</span><div class="ov-lbl">Pending</div></div>
+
+  let html = `
+  <div class="dash-section">
+    <div class="dash-section-title">Overview</div>
+    <div class="big-stats">
+      <div class="big-stat bs-done"><div class="big-stat-val">${done}</div><div class="big-stat-lbl">SOPs Done</div></div>
+      <div class="big-stat bs-pend"><div class="big-stat-val">${pending}</div><div class="big-stat-lbl">Pending</div></div>
     </div>
-    <div class="prog-wrap">
-      <div class="prog-bar"><div class="prog-fill" style="width:${pct}%"></div></div>
-      <div class="prog-pct">${pct}% complete</div>
+    <div class="big-stats">
+      <div class="big-stat bs-erp"><div class="big-stat-val">${uploaded}</div><div class="big-stat-lbl">ERP Uploaded</div></div>
+      <div class="big-stat"><div class="big-stat-val">${total}</div><div class="big-stat-lbl">Total Parts</div></div>
     </div>
   </div>
-  <div class="dash-title">By Category</div>`;
-  Object.entries(cats).sort((a,b)=>b[1].total-a[1].total).forEach(([cat,data])=>{
-    const p=data.total?Math.round(data.done/data.total*100):0;
-    const color=CAT_COLORS[cat]||'#888';
-    html+=`<div class="cat-card">
+  <div class="dash-section">
+    <div class="dash-section-title">Progress</div>
+    <div class="progress-card">
+      <div class="prog-hdr"><div class="prog-title">SOP Completion</div><div class="prog-pct" style="color:var(--green)">${sopPct}%</div></div>
+      <div class="prog-bar"><div class="prog-fill pf-sop" style="width:${sopPct}%"></div></div>
+      <div class="prog-sub">${done} of ${total} SOPs completed</div>
+    </div>
+    <div class="progress-card">
+      <div class="prog-hdr"><div class="prog-title">ERP Upload</div><div class="prog-pct" style="color:var(--cyan)">${erpPct}%</div></div>
+      <div class="prog-bar"><div class="prog-fill pf-erp" style="width:${erpPct}%"></div></div>
+      <div class="prog-sub">${uploaded} of ${done} completed SOPs uploaded</div>
+    </div>
+  </div>
+  <div class="dash-section">
+    <div class="dash-section-title">By Category</div>
+    <div class="cat-grid">`;
+  Object.entries(cats).sort((a, b) => b[1].total - a[1].total).forEach(([cat, data]) => {
+    const p = data.total ? Math.round(data.done / data.total * 100) : 0;
+    const color = CAT_COLORS[cat] || '#64748b';
+    html += `<div class="cat-card">
       <div class="cat-hdr"><div class="cat-name">${cat}</div><div class="cat-pct" style="color:${color}">${p}%</div></div>
       <div class="cat-bar"><div class="cat-bar-fill" style="width:${p}%;background:${color}"></div></div>
-      <div class="cat-nums"><span class="c-done">✓ ${data.done} done</span><span class="c-pend">⏳ ${data.total-data.done} pending</span><span class="c-tot">${data.total} total</span></div>
+      <div class="cat-nums"><span class="cn-done">✓ ${data.done}</span><span class="cn-pend">⏳ ${data.total - data.done}</span><span class="cn-tot">${data.total} total</span></div>
     </div>`;
   });
-  document.getElementById('dashContent').innerHTML=html;
+  html += `</div></div>`;
+  document.getElementById('dashContent').innerHTML = html;
 }
 
 // ── PRINT ──
-function renderPrint(){
-  const cats={};
-  RUNNER.filter(p=>p.status==='PENDING').forEach(p=>{
-    const m=p.material||'OTHER';
-    if(!cats[m]) cats[m]=[];
-    cats[m].push(p);
-  });
-  const totalPending=RUNNER.filter(p=>p.status==='PENDING').length;
-  let html=`<div class="print-intro">📋 Select a category to print the pending parts list — give this to your floor worker to set aside parts for SOP preparation.</div>`;
-  Object.entries(cats).sort((a,b)=>b[1].length-a[1].length).forEach(([cat,parts])=>{
-    html+=`<div class="print-section">
+function renderPrint() {
+  const pending = RUNNER.filter(p => p.status === 'PENDING');
+  const notUploaded = RUNNER.filter(p => p.status === 'COMPLETED' && p.erpUpload !== 'UPLOADED');
+  const cats = {};
+  pending.forEach(p => { const m = p.material || 'OTHER'; if (!cats[m]) cats[m] = []; cats[m].push(p); });
+
+  const waText = generateWAText();
+
+  let html = `
+  <div class="wa-card">
+    <div class="wa-title">📱 WhatsApp Summary</div>
+    <div class="wa-preview" id="waPreview">${waText}</div>
+    <div class="wa-actions">
+      <button class="btn btn-wa" onclick="copyWA()">📋 Copy</button>
+      <button class="btn btn-ghost" onclick="shareWA()">📤 Share</button>
+    </div>
+  </div>
+  <div class="print-intro">📋 Print pending SOP lists by category — give to floor worker to set aside parts.</div>`;
+
+  Object.entries(cats).sort((a, b) => b[1].length - a[1].length).forEach(([cat, parts]) => {
+    html += `<div class="print-section">
       <div class="print-hdr"><div class="print-cat">${cat}</div><div class="print-cnt">⏳ ${parts.length} pending</div></div>
-      <button class="print-btn" onclick="doPrint('${cat}')">🖨 Print ${cat} Pending List</button>
+      <button class="print-btn" onclick="doPrint('SOP','${cat}')">🖨 Print ${cat} — SOP Pending</button>
     </div>`;
   });
-  html+=`<div style="margin-top:16px">
-    <button class="print-all-btn" onclick="doPrint('ALL')">🖨 Print Full Pending List (${totalPending} parts)</button>
+
+  html += `<div style="margin-top:8px">
+    <button class="print-all-btn" onclick="doPrint('SOP','ALL')">🖨 Print Full SOP Pending List (${pending.length} parts)</button>
   </div>`;
-  document.getElementById('printContent').innerHTML=html;
+
+  if (notUploaded.length) {
+    html += `<div class="divider"></div>
+    <div class="print-intro" style="margin-bottom:12px">⬆ Print list of SOPs completed but not yet uploaded to ERP.</div>
+    <button class="print-all-btn" style="background:var(--cyan)" onclick="doPrint('ERP','ALL')">🖨 Print ERP Upload Pending (${notUploaded.length} parts)</button>`;
+  }
+
+  document.getElementById('printContent').innerHTML = html;
 }
 
-function doPrint(cat){
-  const parts=cat==='ALL'?RUNNER.filter(p=>p.status==='PENDING'):RUNNER.filter(p=>p.status==='PENDING'&&p.material===cat);
-  const date=new Date().toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'});
-  const rows=parts.map((p,i)=>`<tr><td>${i+1}</td><td><b>${p.partNo}</b></td><td>${p.material}</td><td style="color:#c00;font-weight:bold">PENDING</td></tr>`).join('');
-  const win=window.open('','_blank');
-  win.document.write(`<!DOCTYPE html><html><head><title>Pending SOPs — ${cat}</title>
+function generateWAText() {
+  const total = RUNNER.length;
+  const done = RUNNER.filter(p => p.status === 'COMPLETED').length;
+  const pending = total - done;
+  const uploaded = RUNNER.filter(p => p.erpUpload === 'UPLOADED').length;
+  const notUploaded = done - uploaded;
+  const sopPct = total ? Math.round(done / total * 100) : 0;
+  const date = new Date().toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
+  return `*MRP AutoRub — SOP Status Update*\n📅 ${date}\n\n✅ SOPs Done: ${done}/${total} (${sopPct}%)\n⏳ SOP Pending: ${pending}\n⬆ ERP Uploaded: ${uploaded}\n📋 Not Yet Uploaded: ${notUploaded}\n\n_Generated via SOP Checker App_`;
+}
+
+function copyWA() {
+  const text = generateWAText();
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = event.target; btn.textContent = '✓ Copied!';
+    setTimeout(() => { btn.textContent = '📋 Copy'; }, 2000);
+  });
+}
+
+function shareWA() {
+  const text = encodeURIComponent(generateWAText());
+  window.open(`https://wa.me/?text=${text}`, '_blank');
+}
+
+function doPrint(type, cat) {
+  let parts, title;
+  if (type === 'SOP') {
+    parts = cat === 'ALL' ? RUNNER.filter(p => p.status === 'PENDING') : RUNNER.filter(p => p.status === 'PENDING' && p.material === cat);
+    title = `Pending SOP List — ${cat}`;
+  } else {
+    parts = RUNNER.filter(p => p.status === 'COMPLETED' && p.erpUpload !== 'UPLOADED');
+    title = 'ERP Upload Pending List';
+  }
+  const date = new Date().toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
+  const rows = parts.map((p, i) => `<tr><td>${i+1}</td><td><b>${p.partNo}</b></td><td>${p.material}</td><td style="color:${type==='SOP'?'#c00':'#0070c0'};font-weight:bold">${type==='SOP'?'SOP PENDING':'ERP PENDING'}</td></tr>`).join('');
+  const win = window.open('', '_blank');
+  win.document.write(`<!DOCTYPE html><html><head><title>${title}</title>
   <style>body{font-family:Arial,sans-serif;padding:24px;color:#000}h2{font-size:18px;margin-bottom:4px;color:#1F4E79}p{font-size:12px;color:#666;margin-bottom:20px}table{width:100%;border-collapse:collapse}th{background:#1F4E79;color:#fff;padding:9px 10px;text-align:left;font-size:12px}td{padding:8px 10px;border-bottom:1px solid #e0e0e0;font-size:12px}tr:nth-child(even){background:#f5f8ff}.footer{margin-top:20px;font-size:10px;color:#aaa;border-top:1px solid #eee;padding-top:10px}</style>
   </head><body>
-  <h2>MRP AutoRub — Pending SOP List</h2>
-  <p>Category: <b>${cat}</b> &nbsp;|&nbsp; Total Pending: <b>${parts.length}</b> &nbsp;|&nbsp; Date: ${date}</p>
+  <h2>MRP AutoRub — ${title}</h2>
+  <p>Total: <b>${parts.length}</b> &nbsp;|&nbsp; Date: ${date}</p>
   <table><thead><tr><th>#</th><th>Part Number</th><th>Material</th><th>Status</th></tr></thead><tbody>${rows}</tbody></table>
-  <div class="footer">Generated from MRP AutoRub SOP Checker — pranoy321.github.io/sop-checker</div>
+  <div class="footer">Generated from MRP AutoRub SOP Checker</div>
   <script>window.onload=()=>{window.print()}<\/script></body></html>`);
   win.document.close();
 }
 
 // ── MODAL ──
-function showModal(partNo,source){
-  const list=source==='runner'?RUNNER:EXTRA;
-  const p=list.find(x=>x.partNo===partNo);
-  if(!p) return;
-  const isX=source==='extra',isDone=p.status==='COMPLETED';
-  document.getElementById('mPartNo').textContent=p.partNo;
-  document.getElementById('mMat').textContent=p.material||'—';
-  document.getElementById('mSno').textContent=`#${p.sno}`;
-  document.getElementById('mList').textContent=isX?'⭐ Extra Parts':'✓ Runner Parts List';
-  const s=document.getElementById('mStatus');
-  if(isX){s.className='modal-status-big msb-xtra';s.innerHTML='⭐ &nbsp;SOP COMPLETED — EXTRA PART';}
-  else if(isDone){s.className='modal-status-big msb-done';s.innerHTML='✓ &nbsp;SOP COMPLETED';}
-  else{s.className='modal-status-big msb-pend';s.innerHTML='⏳ &nbsp;SOP PENDING';}
+function showModal(partNo, source) {
+  const list = source === 'runner' ? RUNNER : EXTRA;
+  const p = list.find(x => x.partNo === partNo);
+  if (!p) return;
+  const isX = source === 'extra', isDone = p.status === 'COMPLETED', isUp = p.erpUpload === 'UPLOADED';
+  document.getElementById('mPartNo').textContent = p.partNo;
+  document.getElementById('mMat').textContent = p.material || '—';
+  document.getElementById('mSno').textContent = `#${p.sno}`;
+  document.getElementById('mList').textContent = isX ? '⭐ Extra Parts' : '✓ Runner Parts';
+  document.getElementById('mDate').textContent = p.dateCompleted || '—';
+  const s = document.getElementById('mStatus');
+  if (isX) { s.className = 'modal-status ms-xtra'; s.innerHTML = '⭐ &nbsp;SOP COMPLETED — EXTRA PART'; }
+  else if (isDone) { s.className = 'modal-status ms-done'; s.innerHTML = '✓ &nbsp;SOP COMPLETED'; }
+  else { s.className = 'modal-status ms-pend'; s.innerHTML = '⏳ &nbsp;SOP PENDING'; }
+  const erp = document.getElementById('mErp');
+  if (!isX && isDone) {
+    erp.style.display = 'flex';
+    erp.className = isUp ? 'modal-erp me-up' : 'modal-erp me-notup';
+    erp.innerHTML = isUp ? '⬆ &nbsp;ERP UPLOADED' : '📋 &nbsp;NOT YET UPLOADED TO ERP';
+  } else { erp.style.display = 'none'; }
   document.getElementById('modalOverlay').classList.add('open');
 }
-function closeModal(e){if(e.target===document.getElementById('modalOverlay'))document.getElementById('modalOverlay').classList.remove('open');}
+function closeModal(e) { if (e.target === document.getElementById('modalOverlay')) document.getElementById('modalOverlay').classList.remove('open'); }
 
 // ── TABS ──
-function switchTab(tab){
-  document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('active',['search','dashboard','print'][i]===tab));
-  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
-  document.getElementById('view-'+tab).classList.add('active');
+function switchTab(tab) {
+  const tabs = ['search', 'bulk', 'erp', 'dashboard', 'print'];
+  document.querySelectorAll('.tab').forEach((t, i) => t.classList.toggle('active', tabs[i] === tab));
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.getElementById('view-' + tab).classList.add('active');
 }
 
 // ── FILTERS ──
-document.querySelectorAll('.filter-btn').forEach(btn=>{
-  btn.addEventListener('click',function(){
-    document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+document.querySelectorAll('.fbtn').forEach(btn => {
+  btn.addEventListener('click', function () {
+    document.querySelectorAll('.fbtn').forEach(b => b.classList.remove('active'));
     this.classList.add('active');
-    currentFilter=this.dataset.filter;
+    currentFilter = this.dataset.filter;
     renderSearch();
   });
 });
-document.getElementById('search').addEventListener('input',function(){searchQ=this.value.trim();renderSearch();});
+document.getElementById('search').addEventListener('input', function () { searchQ = this.value.trim(); renderSearch(); });
 
-setInterval(loadData,5*60*1000);
+setInterval(loadData, 5 * 60 * 1000);
 loadData();
 </script>
 </body>
